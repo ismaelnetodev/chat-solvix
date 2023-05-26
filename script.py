@@ -1,7 +1,6 @@
 import openai  # pip install openai
 import speech_recognition as sr  # pip install SpeechRecognition
-from key import IAKEY, initialcommands
-#import whisper  # pip install whisper-openai
+from key import IAKEY
 import pyttsx3  # pip install pyttsx3
 import os
 
@@ -16,9 +15,6 @@ escolher_stt = "google"
 # falar ou nao
 falar = True
 ativar_fala = False
-
-#if entrada_por_texto:
- #   sem_palavra_ativadora = True
 
 
 def generate_answer(messages):
@@ -48,7 +44,6 @@ def save_file(dados):
 # reconhecer
 r = sr.Recognizer()
 mic = sr.Microphone()
-#model = whisper.load_model("base")
 
 # falar
 engine = pyttsx3.init()
