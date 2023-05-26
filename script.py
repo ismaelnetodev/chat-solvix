@@ -1,31 +1,24 @@
 import openai  # pip install openai
 import speech_recognition as sr  # pip install SpeechRecognition
-from key import IAKEY
-import whisper  # pip install whisper-openai
-from funcoes import *
+from key import IAKEY, initialcommands
+#import whisper  # pip install whisper-openai
 import pyttsx3  # pip install pyttsx3
 import os
 
 # Initialize the API key
 openai.api_key = IAKEY
 
-# caso nao queira falar "assistente" ou "Chat GPT"
-sem_palavra_ativadora = False
 # printa o total de tokens por interacao
-debug_custo = False
+debug_custo = True
 # print de algumas informacoes para debug
-debugar = False
-# define qual gerador de texto
-# escolher_stt = "whisper"
+debugar = True
 escolher_stt = "google"
-# escolhe entrada por texto ou voz
-entrada_por_texto = False
 # falar ou nao
 falar = True
 ativar_fala = False
 
-if entrada_por_texto:
-    sem_palavra_ativadora = True
+#if entrada_por_texto:
+ #   sem_palavra_ativadora = True
 
 
 def generate_answer(messages):
@@ -55,7 +48,7 @@ def save_file(dados):
 # reconhecer
 r = sr.Recognizer()
 mic = sr.Microphone()
-model = whisper.load_model("base")
+#model = whisper.load_model("base")
 
 # falar
 engine = pyttsx3.init()
@@ -66,7 +59,7 @@ for indice, vozes in enumerate(voices):  # listar vozes
 voz = 0  
 engine.setProperty('voice', voices[voz].id)
 
-mensagens = [{"role": "system", "content": "Você é um assistente inteligente, seu nome é Solvix e quer ajudar resolver problemas. Seus criadores são: Ismael, Rosana e Átilla"}]
+mensagens = [{"role": "system", "content": "Você é um chat inteligente, seu nome é Solvix e quer ajudar resolver problemas. Caso pergutem quem são seu criadores: Seus criadores são: Ismael, Rosana e Átilla, Isadora e Aryelle. Caso pergutemo significado do seu nome: O nome 'Solvix'é uma combinação das palavras 'solve'(resolver, em inglês) e o sufixo '-i x'. O termo 'solve' é associado à ação de solucionar, encontrar respostas ou resolver problemas. Caso peça para se apresentar: Diga 'Olá turma', Diga seu nome, seus criadores e que foi projetado para um trabalho no IFMA sobre a tutela dos professores 'Akyra' e 'Franklin'"}]
 
 path = os.getcwd()
 filename = "audio.wav"
@@ -79,31 +72,22 @@ while True:
     text = ""
     question = ""
 
-    if entrada_por_texto:
-        question = input("Digite o que quizer (\"sair\"): ")
-    else:
         # Ask a question
-        with mic as fonte:
-            if ajustar_ambiente_noise:
-                r.adjust_for_ambient_noise(fonte)
-                ajustar_ambiente_noise = False
-            print("Fale alguma coisa")
-            audio = r.listen(fonte)
-            print("Enviando para reconhecimento")
+    with mic as fonte:
+        if ajustar_ambiente_noise:
+            r.adjust_for_ambient_noise(fonte)
+            ajustar_ambiente_noise = False
+        print("Fale alguma coisa")
+        audio = r.listen(fonte)
+        print("Enviando para reconhecimento")
 
-            if escolher_stt == "google":
-                try:
-                    question = r.recognize_google(audio, language="pt-BR")
-                except Exception as e:
-                    print("Erro no reconhecimento")
-                    continue
-            elif escolher_stt == "whisper":
-                save_file(audio.get_wav_data())
-
-        if escolher_stt == "whisper":
-            text = model.transcribe(path + filename, language='pt', fp16=False)
-            question = text["text"]
-
+        if escolher_stt == "google":
+            try:
+                question = r.recognize_google(audio, language="pt-BR")
+            except Exception as e:
+                print("Erro no reconhecimento")
+                continue
+            
     if ("desligar" in question and "assistente" in question) or question.startswith("sair"):
         print(question, "Saindo.")
         if falar:
@@ -113,7 +97,7 @@ while True:
         print("No sound")
         continue
     elif question.startswith("Assistente") or question.startswith("assistente") or question.startswith(
-            "solvix") or sem_palavra_ativadora:
+            "solvix"):
         print("Me: ", question)
         mensagens.append({"role": "user", "content": str(question)})
 
