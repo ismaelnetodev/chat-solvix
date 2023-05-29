@@ -2,8 +2,7 @@ import openai  # pip install openai
 import speech_recognition as sr  # pip install SpeechRecognition
 from key import IAKEY
 import pyttsx3  # pip install pyttsx3
-import os
-import tkinter
+import threading
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -16,6 +15,7 @@ debug_custo = False
 # print de algumas informacoes para debug
 debugar = False
 escolher_stt = "google"
+stopped = True
 
 # falar ou nao
 falar = True
@@ -58,20 +58,28 @@ engine.setProperty('voice', voices[voz].id)
 
 mensagens = [{"role": "system", "content": "Você é um chat inteligente, seu nome é Solvix e quer ajudar resolver problemas. Caso pergutem quem são seu criadores: Seus criadores são: Ismael, Rosana e Átilla, Isadora e Aryelle. Caso pergutemo significado do seu nome: O nome 'Solvix'é uma combinação das palavras 'solve'(resolver, em inglês) e o sufixo '-ix'. O termo 'solve' é associado à ação de solucionar, encontrar respostas ou resolver problemas. Caso peça para se apresentar: Diga 'Olá turma', Diga seu nome, seus criadores e que foi projetado para um trabalho no IFMA sobre a tutela dos professores 'Akyra' e 'Franklin'"}]
 
-print("Speak to Text", escolher_stt)
-def reconhecerFala():
-    ajustar_ambiente_noise = True
+question = ""
 
+print("Reconhecedor de fala: ", escolher_stt)
+def reconhecimentoFala():
+    ajustar_ambiente_noise = True
+    global stopped
     while True:
         text = ""
-        question = ""
+        global question
             # Ask a question
         with mic as fonte:
             if ajustar_ambiente_noise:
                 r.adjust_for_ambient_noise(fonte)
                 ajustar_ambiente_noise = False
             print("Fale alguma coisa")
-            audio = r.listen(fonte)
+            if not stopped:
+                audio = r.listen(fonte)
+                print("Enviando para reconhecimento")
+                stopped = True
+            else:
+                stopped = False
+                break
             print("Enviando para reconhecimento")
 
             if escolher_stt == "google":
@@ -81,12 +89,7 @@ def reconhecerFala():
                     print("Erro no reconhecimento")
                     continue
 
-        if ("desligar" in question and "assistente" in question) or question.startswith("sair"):
-            print(question, "Saindo.")
-            if falar:
-                talk("Desligando")
-            break
-        elif question == "":
+        if question == "":
             print("No sound")
             continue
         
@@ -97,8 +100,8 @@ def reconhecerFala():
 
         print("Solvix:", answer[0])
 
-        if debug_custo:
-            print("Cost:\n", answer[1])
+        #if debug_custo:
+        #   print("Cost:\n", answer[1])
 
         mensagens.append({"role": "assistant", "content": answer[0]})
 
@@ -108,11 +111,32 @@ def reconhecerFala():
             print("No message")
             continue
 
-        if debugar:
-            print("Mensages", mensagens, type(mensagens))
+        #if debugar:
+        #    print("Mensages", mensagens, type(mensagens))
 
 
-botao = Button(window, text="Falar", command=reconhecerFala)
-botao.pack()
+def reconhecerFala():
+    t = threading.Thread(target=reconhecimentoFala)
+    t.start()
+
+
+def att_valor():
+    global stopped
+    stopped = True 
+
+
+
+lbTitulo = Label(window, text="SOLVIX - CHATBOT IA INTELIGENTE")
+lbTitulo.grid(row=0, column=1, columnspan=2)
+
+
+botao = Button(window, text="Falar", command=reconhecerFala, padx=10, pady=10)
+botao.grid(row=1, column=0)
+
+btStop = Button(window, text="Parar", command=att_valor, padx=10, pady=10)
+btStop.grid(row=1, column=2)
+
+lbUser = Label(window, text="Eu: " + question)
+lbUser.grid(row=2, column=1)
 
 window.mainloop()
