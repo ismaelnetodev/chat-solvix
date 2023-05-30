@@ -4,18 +4,13 @@ from key import IAKEY
 import pyttsx3  # pip install pyttsx3
 import threading
 from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
 
 # Initialize the API key
 openai.api_key = IAKEY
 
-# printa o total de tokens por interacao
-debug_custo = False
-# print de algumas informacoes para debug
-debugar = False
+
 escolher_stt = "google"
-stopped = True
+stopped = False
 
 # falar ou nao
 falar = True
@@ -67,7 +62,6 @@ def reconhecimentoFala():
     while True:
         text = ""
         global question
-            # Ask a question
         with mic as fonte:
             if ajustar_ambiente_noise:
                 r.adjust_for_ambient_noise(fonte)
@@ -82,18 +76,20 @@ def reconhecimentoFala():
                 break
             print("Enviando para reconhecimento")
 
-            if escolher_stt == "google":
-                try:
-                    question = r.recognize_google(audio, language="pt-BR")
-                except Exception as e:
-                    print("Erro no reconhecimento")
-                    continue
+        if escolher_stt == "google":
+            try:
+                question = r.recognize_google(audio, language="pt-BR")
+            except Exception as e:
+                print("Erro no reconhecimento")
+                continue
 
         if question == "":
             print("No sound")
             continue
         
         print("Me: ", question)
+        lbUser = Label(window, text="Eu: " + question)
+        lbUser.grid(row=2, column=1)
         mensagens.append({"role": "user", "content": str(question)})
 
         answer = generate_answer(mensagens)
@@ -122,7 +118,7 @@ def reconhecerFala():
 
 def att_valor():
     global stopped
-    stopped = True 
+    stopped = True
 
 
 
@@ -136,7 +132,6 @@ botao.grid(row=1, column=0)
 btStop = Button(window, text="Parar", command=att_valor, padx=10, pady=10)
 btStop.grid(row=1, column=2)
 
-lbUser = Label(window, text="Eu: " + question)
-lbUser.grid(row=2, column=1)
+
 
 window.mainloop()
