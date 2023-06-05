@@ -6,7 +6,6 @@ import tkinter
 from tkinter import *
 import threading
 from PIL import Image, ImageTk
-import role
 
 openai.api_key = IAKEY
 giveAnswer = False
@@ -19,6 +18,7 @@ root.configure(bg="#0f0537")
 root.resizable(False, False)
 largura = root.winfo_screenwidth()
 altura = root.winfo_screenheight()
+root.overrideredirect(1)
 
 #Inciando elementos
 r = sr.Recognizer()
@@ -26,17 +26,17 @@ mic = sr.Microphone()
 
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
-engine.setProperty('rate', 185)
+engine.setProperty('rate', 175)
 voz = 0
 engine.setProperty('voice', voices[voz].id)
 
-mensagens = [{"role": "system", "content": "Você é um chat inteligente, seu nome é Solvix e quer ajudar resolver problemas. Caso pergutem quem são seu criadores: Seus criadores são: Ismael, Rosana e Átilla, Isadora e Aryelle. Caso pergutemo significado do seu nome: O nome 'Solvix'é uma combinação das palavras 'solve'(resolver, em inglês) e o sufixo '-ix'. O termo 'solve' é associado à ação de solucionar, encontrar respostas ou resolver problemas. Caso peça para se apresentar: Diga 'Olá turma', Diga seu nome, seus criadores e que foi projetado para um trabalho no IFMA sobre a tutela dos professores 'Akyra' e 'Franklin'"}]
+mensagens = [{"role": "system", "content": "Você é um chat inteligente, seu nome é Solvix e quer ajudar resolver problemas. Seus criadores são: Ismael, Rosana e Átilla, Isadora e Aryelle, sob a tutela dos professores Akyra e Franklin no IFMA. Caso pergutem o significado do seu nome: O nome 'Solvix'é uma combinação das palavras 'solve'(resolver, em inglês) e o sufixo '-ix'. O termo 'solve' é associado à ação de solucionar, encontrar respostas ou resolver problemas."}]
 
 #variaveis
 question = ""
 status = "Tudo quieto por aqui"
 
-lbinfo = Label(root, text=status, font="Verdana 12", wraplength=300, justify=LEFT, bg="#0f0537", fg="#fff")
+lbinfo = Label(root, text=status, font="Verdana 12", wraplength=400, justify=LEFT, bg="#0f0537", fg="#fff")
 lbinfo.place(x=300, y=400)
 
 
