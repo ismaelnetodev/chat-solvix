@@ -103,11 +103,13 @@ bot_image = ImageTk.PhotoImage(Image.open('imgs\icone.png'))
 lbImage_bot = Label(root, text="", image=bot_image)
 lbImage_bot.place(x=300, y=50)
 
-btnFalar = Button(root, text="Falar", command=threadSpeechRecognition, padx=15, pady=15)
-btnParar = Button(root, text="Sair", command=sair, padx=15, pady=15)
 
-btnFalar.place(x=350, y=325)
-btnParar.place(x=450, y=325)
+micIcon = ImageTk.PhotoImage(Image.open("imgs\microphone.png"))
+btnFalar = Button(root, text="Falar", command=threadSpeechRecognition, padx=15, pady=15, image=micIcon, compound=LEFT)
+btnParar = Button(root, text="Sair", command=sair, padx=23, pady=23)
+
+btnFalar.place(x=330, y=325)
+btnParar.place(x=460, y=325)
 
 
 
